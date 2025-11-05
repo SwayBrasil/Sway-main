@@ -1,0 +1,29 @@
+# robots.txt para SWAY Brasil
+# https://swaybrasil.com/robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /home
+Disallow: /login
+Disallow: /register
+
+# Sitemap
+Sitemap: https://swaybrasil.com/sitemap.xml
+
+# Crawl-delay (opcional, remover se não necessário)
+# Crawl-delay: 1
+
+# Googlebot específico
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /home
+Disallow: /login
+Disallow: /register
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
