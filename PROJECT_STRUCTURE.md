@@ -17,17 +17,16 @@ Sway-main/
 │   │       └── privacidade.html
 │   └── 📁 public/            # Build/dist (futuro)
 │
-├── 📁 backend/               # Backend (futuro)
+├── 📁 backend/               # Backend completo
 │   ├── 📁 src/               # Código-fonte do servidor
-│   ├── 📁 config/            # Configurações
-│   └── 📁 scripts/           # Scripts de deploy
-│
-├── 📁 api/                   # API Routes (futuro)
-│   ├── 📁 config/            # firebase-config.js
-│   ├── 📁 controllers/
-│   ├── 📁 middleware/
-│   ├── 📁 models/
-│   └── 📁 routes/
+│   │   ├── config/           # Configurações (auth, database)
+│   │   ├── controllers/       # Controllers (auth, home)
+│   │   ├── middleware/        # Middleware (auth)
+│   │   ├── routes/           # Rotas da API
+│   │   └── utils/            # Utilitários (jwt, hash)
+│   ├── 📁 prisma/            # Schema e migrations
+│   ├── 📁 config/            # (vazio)
+│   └── 📁 scripts/          # (vazio)
 │
 ├── 📄 index.html             # Raiz (GitHub Pages)
 ├── 📄 termos.html            # Raiz (GitHub Pages)
@@ -49,10 +48,11 @@ Sway-main/
 - ✅ Estrutura de pastas organizada
 - ✅ Separado do frontend
 
-### API (`api/`)
-- ✅ Rotas da API separadas
-- ✅ Configurações isoladas
-- ✅ Fácil de integrar com backend
+### Backend (`backend/`)
+- ✅ Servidor Express completo
+- ✅ API REST estruturada
+- ✅ PostgreSQL com Prisma ORM
+- ✅ Autenticação JWT
 
 ## 🚀 GitHub Pages (Atual)
 
@@ -61,9 +61,9 @@ Os arquivos HTML na **raiz** apontam para `./frontend/src/assets/`:
 - Funciona no GitHub Pages
 - Paths relativos mantêm compatibilidade
 
-## 🔮 Futuro Backend
+## 🔮 Backend Implementado
 
-Quando implementar backend:
+O backend está completo e funcional:
 
 ### Opção 1: Servir Frontend Estático
 ```javascript

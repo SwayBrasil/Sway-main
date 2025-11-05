@@ -26,10 +26,6 @@ backend/node_modules/
 backend/.env
 backend/dist/
 
-# API específica (quando implementada)
-api/node_modules/
-api/.env
-api/dist/
 
 # Firebase
 .firebase/

@@ -10,14 +10,13 @@ O projeto está organizado para funcionar no GitHub Pages e preparado para futur
 ├── index.html              # Página principal (GitHub Pages)
 ├── termos.html             # Termos de Uso
 ├── privacidade.html        # Política de Privacidade
-├── public/                 # Assets do frontend
-│   ├── assets/
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── img/
-│   └── pages/
-├── api/                    # Preparado para API REST
-└── backend/                # Preparado para backend completo
+├── frontend/               # Frontend completo
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── pages/
+│   │   └── index.html
+│   └── public/
+└── backend/                # Backend completo
 ```
 
 Veja `PROJECT_STRUCTURE.md` para detalhes completos.
@@ -33,10 +32,10 @@ Veja `PROJECT_STRUCTURE.md` para detalhes completos.
 
 ### Firebase (Opcional)
 
-1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
-2. Ative o Firebase Analytics
-3. Copie as credenciais do seu projeto
-4. Substitua as configurações no arquivo `api/config/firebase-config.js`
+Atualmente usando Google Analytics. Para usar Firebase Analytics, você precisaria:
+1. Criar um projeto no [Firebase Console](https://console.firebase.google.com)
+2. Ativar o Firebase Analytics
+3. Integrar no código conforme necessário
 
 ### WhatsApp
 
@@ -58,14 +57,15 @@ Todos os links já estão configurados com o número: `+55 (61) 98431-7466`
 - Modifique os textos no `index.html`
 - Adicione ou remova seções conforme necessário
 
-## 🔮 Futuro Backend
+## 🔮 Backend
 
-A estrutura está preparada para implementação futura:
+Backend completo já implementado:
 
-- **API Routes** (`api/`): Para formulários, leads, analytics
-- **Backend** (`backend/`): Para servidor completo, dashboard, autenticação
+- **Backend** (`backend/`): Servidor Express com autenticação JWT, PostgreSQL e Prisma ORM
+- **API REST**: Endpoints para login, cadastro e dashboard
+- **Banco de Dados**: PostgreSQL com modelos para usuários, conversas, atividades e notificações
 
-Os paths são relativos e manterão compatibilidade quando o backend for implementado.
+Veja `backend/README.md` para documentação completa da API.
 
 ## 📄 Páginas Legais
 
