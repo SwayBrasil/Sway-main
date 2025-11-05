@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  sway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sway-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/sway_db}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      - JWT_EXPIRES_IN=7d
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,https://swaybrasil.com}
+    volumes:
+      # Volume para desenvolvimento (hot reload)
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      # Excluir node_modules do volume
+      - /app/backend/node_modules
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - sway-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: sway-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sway_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - sway-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sway-network:
+    driver: bridge
+

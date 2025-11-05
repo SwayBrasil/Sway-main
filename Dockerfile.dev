@@ -1,0 +1,33 @@
+# Dockerfile para desenvolvimento
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar dependências globais
+RUN npm install -g nodemon prisma
+
+# Copiar package files
+COPY backend/package*.json ./backend/
+COPY frontend/package*.json ./frontend/ 2>/dev/null || true
+
+# Instalar dependências do backend
+WORKDIR /app/backend
+RUN npm install
+
+# Copiar código
+COPY backend/ ./
+COPY frontend/ ../frontend/
+
+# Gerar Prisma Client
+RUN npx prisma generate
+
+# Expor porta
+EXPOSE 3000
+
+# Variáveis de ambiente
+ENV NODE_ENV=development
+ENV PORT=3000
+
+# Comando para desenvolvimento (com nodemon)
+CMD ["npm", "run", "dev"]
+

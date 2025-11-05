@@ -33,23 +33,60 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
 
-// Serve frontend (quando necessário)
-if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../../frontend/src');
-  app.use(express.static(frontendPath));
-  
-  // Catch all handler: send back React's index.html file
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  });
-}
+// Serve frontend static files
+const frontendPath = path.join(__dirname, '../../frontend/src');
+app.use(express.static(frontendPath));
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Rota não encontrada'
-  });
+// Serve assets
+app.use('/assets', express.static(path.join(frontendPath, 'assets')));
+
+// Serve pages
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'pages/login.html'));
+});
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'pages/register.html'));
+});
+app.get('/home', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'pages/home.html'));
+});
+app.get('/termos', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'pages/termos.html'));
+});
+app.get('/privacidade', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'pages/privacidade.html'));
+});
+
+// Serve frontend static files
+const frontendPath = path.join(__dirname, '../../frontend/src');
+app.use(express.static(frontendPath));
+
+// Serve assets
+app.use('/assets', express.static(path.join(frontendPath, 'assets')));
+
+// Catch all handler: send back index.html for SPA routes
+app.get('*', (req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return next();
+  }
+  
+  // Serve index.html for all other routes
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Catch all handler: send back index.html for frontend routes
+app.get('*', (req, res, next) => {
+  // Skip API routes and health check
+  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    return res.status(404).json({
+      success: false,
+      message: 'Rota não encontrada'
+    });
+  }
+  
+  // Serve index.html for all other routes
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Error handler

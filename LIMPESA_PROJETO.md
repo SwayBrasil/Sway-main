@@ -45,10 +45,6 @@ Análise de arquivos e pastas que podem ser removidos com segurança.
 - `backend/config/` - Vazia
 - `backend/scripts/` - Vazia
 - `backend/src/models/` - Vazia (usando Prisma, não precisa)
-- `api/controllers/` - Vazia
-- `api/middleware/` - Vazia
-- `api/models/` - Vazia
-- `api/routes/` - Vazia
 
 **Observação:** 
 - Pastas podem ser úteis para organização futura
