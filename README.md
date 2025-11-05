@@ -2,46 +2,82 @@
 
 Uma landing page moderna para vender um agente de IA, com integração ao WhatsApp e analytics via Firebase.
 
-## Configuração
+## 🏗️ Estrutura do Projeto
+
+O projeto está organizado para funcionar no GitHub Pages e preparado para futura implementação de backend:
+
+```
+├── index.html              # Página principal (GitHub Pages)
+├── termos.html             # Termos de Uso
+├── privacidade.html        # Política de Privacidade
+├── public/                 # Assets do frontend
+│   ├── assets/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── img/
+│   └── pages/
+├── api/                    # Preparado para API REST
+└── backend/                # Preparado para backend completo
+```
+
+Veja `PROJECT_STRUCTURE.md` para detalhes completos.
+
+## 🚀 Configuração
+
+### GitHub Pages (Atual)
 
 1. Clone este repositório
-2. Configure o Firebase:
-   - Crie um projeto no [Firebase Console](https://console.firebase.google.com)
-   - Ative o Firebase Analytics
-   - Copie as credenciais do seu projeto
-   - Substitua as configurações no arquivo `firebase-config.js`
+2. Configure o domínio personalizado no arquivo `CNAME`
+3. Ative o GitHub Pages nas configurações do repositório
+4. O site estará disponível em `https://seu-dominio.com`
 
-3. Configure o WhatsApp:
-   - Substitua "SEUNUMERO" nos links do WhatsApp pelo seu número no formato internacional (ex: 5511999999999)
+### Firebase (Opcional)
 
-## Estrutura do Projeto
+1. Crie um projeto no [Firebase Console](https://console.firebase.google.com)
+2. Ative o Firebase Analytics
+3. Copie as credenciais do seu projeto
+4. Substitua as configurações no arquivo `api/config/firebase-config.js`
 
-- `index.html` - Estrutura principal da landing page
-- `styles.css` - Estilos e layout responsivo
-- `firebase-config.js` - Configuração do Firebase
-- `app.js` - Lógica de interação e analytics
+### WhatsApp
 
-## Analytics Implementados
+Todos os links já estão configurados com o número: `+55 (61) 98431-7466`
+
+## 📊 Analytics Implementados
 
 - Visualizações de página
 - Cliques nos botões do WhatsApp
-- Profundidade de scroll
+- Profundidade de scroll (25%, 50%, 75%, 100%)
 - Tempo gasto na página
+- Engajamento (>30s)
+- Visualização de seções
+- Expansão de FAQ
 
-## Deploy no GitHub Pages
+## 🎨 Personalização
 
-1. Crie um novo repositório no GitHub
-2. Faça push do código para o repositório
-3. Vá para Settings > Pages
-4. Selecione a branch main como fonte
-5. Seu site estará disponível em `https://seu-usuario.github.io/seu-repositorio`
-
-## Personalização
-
-- Altere as cores no arquivo `styles.css` (variáveis CSS no início do arquivo)
-- Modifique os textos e preços no `index.html`
+- Altere as cores no arquivo `public/assets/css/styles.css`
+- Modifique os textos no `index.html`
 - Adicione ou remova seções conforme necessário
 
-## Suporte
+## 🔮 Futuro Backend
 
-Para suporte ou dúvidas, entre em contato via WhatsApp através do botão na landing page. 
+A estrutura está preparada para implementação futura:
+
+- **API Routes** (`api/`): Para formulários, leads, analytics
+- **Backend** (`backend/`): Para servidor completo, dashboard, autenticação
+
+Os paths são relativos e manterão compatibilidade quando o backend for implementado.
+
+## 📄 Páginas Legais
+
+- `/termos.html` - Termos de Uso
+- `/privacidade.html` - Política de Privacidade (LGPD)
+
+## 🔗 Links
+
+- Website: [swaybrasil.com](https://swaybrasil.com)
+- Instagram: [@sway_brasil](https://www.instagram.com/sway_brasil/)
+- WhatsApp: [Falar com vendas](https://api.whatsapp.com/send/?phone=556198431746)
+
+## 📞 Suporte
+
+Para suporte ou dúvidas, entre em contato via WhatsApp através dos botões na landing page.
