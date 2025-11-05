@@ -1,82 +1,114 @@
-# Estrutura do Projeto SWAY
+# 🏗️ Estrutura do Projeto SWAY
 
-## 📁 Organização de Arquivos
+## 📂 Organização Frontend/Backend
 
 ```
 Sway-main/
 │
-├── 📄 index.html              # Página principal (raiz para GitHub Pages)
-├── 📄 termos.html              # Termos de Uso (raiz para GitHub Pages)
-├── 📄 privacidade.html         # Política de Privacidade (raiz para GitHub Pages)
-├── 📄 CNAME                    # Configuração de domínio personalizado
-├── 📄 README.md                 # Documentação principal
+├── 📁 frontend/              # Frontend completo
+│   ├── 📁 src/               # Código-fonte
+│   │   ├── 📁 assets/
+│   │   │   ├── css/         # styles.css
+│   │   │   ├── js/          # app.js
+│   │   │   └── img/         # Imagens e favicons
+│   │   └── 📁 pages/        # Páginas HTML
+│   │       ├── index.html
+│   │       ├── termos.html
+│   │       └── privacidade.html
+│   └── 📁 public/            # Build/dist (futuro)
 │
-├── 📁 public/                  # Frontend Assets
-│   ├── 📁 assets/
-│   │   ├── 📁 css/
-│   │   │   └── styles.css
-│   │   ├── 📁 js/
-│   │   │   └── app.js          # Analytics e eventos
-│   │   └── 📁 img/              # Imagens e favicons
-│   │       ├── logo-sway.png
-│   │       ├── favicon-32.png
-│   │       ├── sway_logo-*.png
-│   │       └── ...
-│   └── 📁 pages/
-│       ├── termos.html          # Backup/cópia
-│       └── privacidade.html     # Backup/cópia
+├── 📁 backend/               # Backend (futuro)
+│   ├── 📁 src/               # Código-fonte do servidor
+│   ├── 📁 config/            # Configurações
+│   └── 📁 scripts/           # Scripts de deploy
 │
-├── 📁 api/                     # Preparado para API REST futura
-│   ├── 📁 config/
-│   │   └── firebase-config.js
+├── 📁 api/                   # API Routes (futuro)
+│   ├── 📁 config/            # firebase-config.js
 │   ├── 📁 controllers/
 │   ├── 📁 middleware/
 │   ├── 📁 models/
 │   └── 📁 routes/
 │
-└── 📁 backend/                 # Preparado para backend completo
-    ├── 📁 src/
-    ├── 📁 config/
-    └── 📁 scripts/
+├── 📄 index.html             # Raiz (GitHub Pages)
+├── 📄 termos.html            # Raiz (GitHub Pages)
+├── 📄 privacidade.html       # Raiz (GitHub Pages)
+├── 📄 CNAME                  # Domínio personalizado
+└── 📄 README.md
 ```
 
-## 🔄 Compatibilidade GitHub Pages
+## 🔄 Separação Frontend/Backend
 
-Os arquivos HTML principais estão na **raiz** para funcionar no GitHub Pages:
-- `index.html` → Aponta para `./public/assets/`
-- `termos.html` → Aponta para `./public/assets/`
-- `privacidade.html` → Aponta para `./public/assets/`
+### Frontend (`frontend/`)
+- ✅ Todo código frontend isolado
+- ✅ HTML, CSS, JavaScript
+- ✅ Assets organizados
+- ✅ Pronto para build process futuro
 
-## 🚀 Futuro Backend
+### Backend (`backend/`)
+- ✅ Preparado para implementação
+- ✅ Estrutura de pastas organizada
+- ✅ Separado do frontend
 
-Quando o backend for implementado:
+### API (`api/`)
+- ✅ Rotas da API separadas
+- ✅ Configurações isoladas
+- ✅ Fácil de integrar com backend
 
-1. **API Routes** (`api/`):
-   - Rotas REST para formulários, leads, analytics
-   - Middleware de autenticação
-   - Integração com banco de dados
+## 🚀 GitHub Pages (Atual)
 
-2. **Backend Completo** (`backend/`):
-   - Servidor Node.js/Python/PHP
-   - Processamento de requisições
-   - Dashboard administrativo
+Os arquivos HTML na **raiz** apontam para `./frontend/src/assets/`:
+- `index.html` → usa `./frontend/src/assets/`
+- Funciona no GitHub Pages
+- Paths relativos mantêm compatibilidade
 
-3. **Frontend** (`public/`):
-   - Continua funcionando normalmente
-   - Paths relativos mantêm compatibilidade
-   - Pode ser servido pelo backend ou CDN
+## 🔮 Futuro Backend
+
+Quando implementar backend:
+
+### Opção 1: Servir Frontend Estático
+```javascript
+// backend/src/server.js
+app.use(express.static('../frontend/src'));
+```
+
+### Opção 2: Build Process
+```javascript
+// Compilar frontend/src → frontend/public
+// Servir frontend/public
+app.use(express.static('../frontend/public'));
+```
+
+### Opção 3: Separado (Microserviços)
+- Frontend: CDN ou servidor separado
+- Backend: API apenas
+- Comunicação via REST/GraphQL
 
 ## 📝 Paths Relativos
 
-Todos os paths são **relativos** para manter compatibilidade:
-- `./public/assets/img/` - Imagens
-- `./public/assets/js/app.js` - JavaScript
-- `./termos.html` - Páginas
+### GitHub Pages (Raiz)
+```html
+<script src="./frontend/src/assets/js/app.js"></script>
+<img src="./frontend/src/assets/img/logo.png">
+```
 
-## ✅ Status Atual
+### Backend (Servindo frontend/src)
+```html
+<script src="./assets/js/app.js"></script>
+<img src="./assets/img/logo.png">
+```
 
-- ✅ Estrutura organizada
-- ✅ Compatível com GitHub Pages
-- ✅ Preparado para backend futuro
-- ✅ Paths relativos funcionando
+## ✅ Vantagens desta Estrutura
+
+1. **Separação clara** - Frontend e backend isolados
+2. **GitHub Pages** - Continua funcionando
+3. **Escalável** - Fácil adicionar build process
+4. **Organizado** - Cada parte tem seu lugar
+5. **Flexível** - Pode migrar para qualquer stack
+
+## 🎯 Próximos Passos
+
+1. ✅ Estrutura criada
+2. ⏳ Implementar build process (opcional)
+3. ⏳ Implementar backend
+4. ⏳ Integrar frontend + backend
 
