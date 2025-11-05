@@ -1,121 +1,74 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// Main server file
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
-// Load environment variables
-dotenv.config();
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const homeRoutes = require('./routes/homeRoutes');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// Initialize app
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || 'localhost';
-const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// ============================================
 // Middleware
-// ============================================
-
-// Security headers
-app.use(helmet());
-
-// CORS configuration
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:8000',
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-
-// Body parser
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:8000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Logging
-if (NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
-}
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/', limiter);
-
-// ============================================
-// Routes
-// ============================================
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: NODE_ENV
+    success: true,
+    message: 'SWAY Backend API is running',
+    timestamp: new Date().toISOString()
   });
 });
 
 // API Routes
-import apiRoutes from './routes/index.js';
-app.use('/api', apiRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
 
-// Serve frontend static files (in production)
-if (NODE_ENV === 'production') {
+// Serve frontend (quando necessário)
+if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../../frontend/src');
   app.use(express.static(frontendPath));
   
-  // Serve index.html for all routes (SPA fallback)
+  // Catch all handler: send back React's index.html file
   app.get('*', (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
-// ============================================
-// Error Handling
-// ============================================
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
-    error: 'Not Found',
-    message: `Route ${req.originalUrl} not found`
+    success: false,
+    message: 'Rota não encontrada'
   });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err);
   res.status(err.status || 500).json({
-    error: NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
-    ...(NODE_ENV === 'development' && { stack: err.stack })
+    success: false,
+    message: err.message || 'Erro interno do servidor',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
 
-// ============================================
-// Server Start
-// ============================================
-
-app.listen(PORT, HOST, () => {
-  console.log(`
-🚀 SWAY Backend Server
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📍 Environment: ${NODE_ENV}
-🌐 Server: http://${HOST}:${PORT}
-📊 Health: http://${HOST}:${PORT}/health
-🔗 API: http://${HOST}:${PORT}/api
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  `);
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 SWAY Backend running on port ${PORT}`);
+  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`💚 Health: http://localhost:${PORT}/health`);
 });
 
-export default app;
+module.exports = app;
 

@@ -1,33 +1,42 @@
-// Database configuration placeholder
-// Uncomment and configure when database is implemented
+// Database configuration
+// Por enquanto usando array em memória (substituir por banco de dados real)
 
-/*
-import { Pool } from 'pg'; // PostgreSQL
-// ou
-import mongoose from 'mongoose'; // MongoDB
+const users = [
+  // Exemplo de usuário (senha: admin123)
+  {
+    id: 1,
+    name: 'Admin',
+    email: 'admin@swaybrasil.com',
+    password: '$2a$10$rQ9Q9Q9Q9Q9Q9Q9Q9Q9Q.O9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q',
+    createdAt: new Date()
+  }
+];
 
-// PostgreSQL example
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
-
-// MongoDB example
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+// Funções para simular banco de dados
+const db = {
+  // Users
+  findUserByEmail: (email) => {
+    return users.find(user => user.email === email);
+  },
+  
+  findUserById: (id) => {
+    return users.find(user => user.id === parseInt(id));
+  },
+  
+  createUser: (userData) => {
+    const newUser = {
+      id: users.length + 1,
+      ...userData,
+      createdAt: new Date()
+    };
+    users.push(newUser);
+    return newUser;
+  },
+  
+  getAllUsers: () => {
+    return users.map(({ password, ...user }) => user); // Remove senha
   }
 };
 
-export { pool, connectDB };
-*/
-
-export default {};
+module.exports = db;
 
