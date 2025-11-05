@@ -26,7 +26,7 @@ const register = async (req, res) => {
     }
     
     // Check if user already exists
-    const existingUser = db.findUserByEmail(email);
+    const existingUser = await db.findUserByEmail(email);
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -38,11 +38,19 @@ const register = async (req, res) => {
     const hashedPassword = await hashPassword(password);
     
     // Create user
-    const user = db.createUser({
+    const user = await db.createUser({
       name,
       email,
       password: hashedPassword
     });
+    
+    // Create welcome activity
+    try {
+      await db.createActivity(user.id, 'register', 'Usuário criado com sucesso');
+    } catch (activityError) {
+      console.error('Error creating welcome activity:', activityError);
+      // Não falha o registro se a atividade não for criada
+    }
     
     // Generate token
     const token = generateToken({
@@ -87,7 +95,7 @@ const login = async (req, res) => {
     }
     
     // Find user
-    const user = db.findUserByEmail(email);
+    const user = await db.findUserByEmail(email);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -110,6 +118,14 @@ const login = async (req, res) => {
       email: user.email,
       name: user.name
     });
+    
+    // Create login activity
+    try {
+      await db.createActivity(user.id, 'login', 'Login realizado com sucesso');
+    } catch (activityError) {
+      console.error('Error creating login activity:', activityError);
+      // Não falha o login se a atividade não for criada
+    }
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
@@ -137,7 +153,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = db.findUserById(userId);
+    const user = await db.findUserById(userId);
     
     if (!user) {
       return res.status(404).json({
@@ -156,6 +172,7 @@ const getMe = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Error in getMe:', error);
     return res.status(500).json({
       success: false,
       message: 'Erro ao buscar usuário',

@@ -12,6 +12,8 @@ yarn.lock
 *.sqlite
 *.db
 database/
+# Prisma
+prisma/migrations/
 
 # Logs
 logs/
@@ -34,3 +36,5 @@ Thumbs.db
 dist/
 build/
 
+
+/src/generated/prisma

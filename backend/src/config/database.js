@@ -1,42 +1,178 @@
-// Database configuration
-// Por enquanto usando array em memória (substituir por banco de dados real)
+// Database configuration with Prisma
+const { PrismaClient } = require('@prisma/client');
 
-const users = [
-  // Exemplo de usuário (senha: admin123)
-  {
-    id: 1,
-    name: 'Admin',
-    email: 'admin@swaybrasil.com',
-    password: '$2a$10$rQ9Q9Q9Q9Q9Q9Q9Q9Q9Q.O9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q9Q',
-    createdAt: new Date()
-  }
-];
+// Singleton pattern para Prisma Client
+const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
 
-// Funções para simular banco de dados
+// Graceful shutdown
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
+
+// Database functions
 const db = {
-  // Users
-  findUserByEmail: (email) => {
-    return users.find(user => user.email === email);
+  // User operations
+  async findUserByEmail(email) {
+    try {
+      return await prisma.user.findUnique({
+        where: { email }
+      });
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      return null;
+    }
   },
   
-  findUserById: (id) => {
-    return users.find(user => user.id === parseInt(id));
+  async findUserById(id) {
+    try {
+      return await prisma.user.findUnique({
+        where: { id: parseInt(id) }
+      });
+    } catch (error) {
+      console.error('Error finding user by id:', error);
+      return null;
+    }
   },
   
-  createUser: (userData) => {
-    const newUser = {
-      id: users.length + 1,
-      ...userData,
-      createdAt: new Date()
-    };
-    users.push(newUser);
-    return newUser;
+  async createUser(userData) {
+    try {
+      return await prisma.user.create({
+        data: userData
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   },
   
-  getAllUsers: () => {
-    return users.map(({ password, ...user }) => user); // Remove senha
+  async getAllUsers() {
+    try {
+      return await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          updatedAt: true
+          // password não é retornado
+        }
+      });
+    } catch (error) {
+      console.error('Error getting all users:', error);
+      return [];
+    }
+  },
+
+  // Conversation operations
+  async getConversationStats(userId) {
+    try {
+      const total = await prisma.conversation.count({
+        where: { userId }
+      });
+      
+      const active = await prisma.conversation.count({
+        where: { 
+          userId,
+          status: 'active'
+        }
+      });
+      
+      const resolved = await prisma.conversation.count({
+        where: {
+          userId,
+          status: 'resolved',
+          createdAt: {
+            gte: new Date(new Date().setHours(0, 0, 0, 0)) // Hoje
+          }
+        }
+      });
+      
+      const pending = await prisma.conversation.count({
+        where: {
+          userId,
+          status: 'pending'
+        }
+      });
+      
+      return { total, active, resolved, pending };
+    } catch (error) {
+      console.error('Error getting conversation stats:', error);
+      return { total: 0, active: 0, resolved: 0, pending: 0 };
+    }
+  },
+
+  // Activity operations
+  async getRecentActivities(userId, limit = 5) {
+    try {
+      return await prisma.activity.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        select: {
+          type: true,
+          message: true,
+          createdAt: true
+        }
+      });
+    } catch (error) {
+      console.error('Error getting recent activities:', error);
+      return [];
+    }
+  },
+
+  async createActivity(userId, type, message) {
+    try {
+      return await prisma.activity.create({
+        data: {
+          userId,
+          type,
+          message
+        }
+      });
+    } catch (error) {
+      console.error('Error creating activity:', error);
+      throw error;
+    }
+  },
+
+  // Notification operations
+  async getNotifications(userId, limit = 5) {
+    try {
+      return await prisma.notification.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        select: {
+          id: true,
+          type: true,
+          message: true,
+          read: true,
+          createdAt: true
+        }
+      });
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
+  },
+
+  async createNotification(userId, type, message) {
+    try {
+      return await prisma.notification.create({
+        data: {
+          userId,
+          type,
+          message
+        }
+      });
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      throw error;
+    }
   }
 };
 
 module.exports = db;
-
+module.exports.prisma = prisma;

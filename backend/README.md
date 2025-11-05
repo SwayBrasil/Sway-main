@@ -199,16 +199,31 @@ O token é retornado no login e registro.
 
 ## 🗄️ Banco de Dados
 
-Atualmente usando array em memória para desenvolvimento. Para produção, recomenda-se:
+✅ **PostgreSQL configurado com Prisma ORM**
 
-- **SQLite** (desenvolvimento/teste)
-- **PostgreSQL** (produção recomendada)
-- **MySQL/MariaDB** (alternativa)
+### Setup Inicial
 
-Para migrar para banco real:
-1. Instalar ORM (Prisma, Sequelize, TypeORM)
-2. Configurar conexão no `src/config/database.js`
-3. Criar migrations
+1. Instalar PostgreSQL localmente
+2. Criar banco de dados: `createdb sway_db`
+3. Configurar `.env` com `DATABASE_URL`
+4. Executar migrations: `npm run db:migrate`
+5. Popular banco (opcional): `npm run db:seed`
+
+Veja `SETUP_DATABASE.md` para guia completo.
+
+### Estrutura
+
+- **users** - Usuários do sistema
+- **conversations** - Conversas/atendimentos
+- **activities** - Atividades do usuário
+- **notifications** - Notificações
+
+### Comandos
+
+- `npm run db:generate` - Gerar Prisma Client
+- `npm run db:migrate` - Criar/aplicar migrations
+- `npm run db:studio` - Interface visual (http://localhost:5555)
+- `npm run db:seed` - Popular banco com dados iniciais
 
 ## 🔧 Scripts
 
