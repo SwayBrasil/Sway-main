@@ -66,10 +66,8 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api', (req, res, next) => {
-  // API routes will be added here
-  res.json({ message: 'API routes - to be implemented' });
-});
+import apiRoutes from './routes/index.js';
+app.use('/api', apiRoutes);
 
 // Serve frontend static files (in production)
 if (NODE_ENV === 'production') {
