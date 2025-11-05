@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - SWAY Brasil</title>
+  <meta name="description" content="Dashboard da plataforma SWAY" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eef7ff', 100: '#d9ecff', 200: '#b6d9ff', 300: '#8ec4ff', 400: '#5aa7ff', 500: '#2f8cff', 600: '#1a6fe5', 700: '#1557b3', 800: '#0f3c80', 900: '#0a2a59'
+            }
+          },
+          boxShadow: { soft: '0 10px 30px rgba(2,6,23,0.08)' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body class="bg-slate-50">
+  <!-- Navbar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="flex items-center gap-8">
+          <a href="../index.html" class="flex items-center gap-2">
+            <span class="text-lg font-extrabold tracking-tight">SWAY</span>
+          </a>
+          <nav class="hidden md:flex items-center gap-6 text-sm">
+            <a href="home.html" class="text-primary-600 font-medium">Dashboard</a>
+            <a href="#" class="text-slate-600 hover:text-slate-900">Conversas</a>
+            <a href="#" class="text-slate-600 hover:text-slate-900">Analytics</a>
+            <a href="#" class="text-slate-600 hover:text-slate-900">Configurações</a>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="userName" class="text-sm text-slate-600 hidden md:block"></span>
+          <button
+            id="logoutBtn"
+            class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg hover:bg-slate-50"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-slate-900">Bem-vindo, <span id="welcomeName"></span>!</h1>
+      <p class="mt-2 text-slate-600">Acompanhe sua operação de atendimento com IA</p>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="text-center py-12">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      <p class="mt-4 text-slate-600">Carregando dados...</p>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboardContent" class="hidden">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 mb-1">Total de Conversas</p>
+              <p id="totalConversations" class="text-2xl font-bold text-slate-900">0</p>
+            </div>
+            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+              <span class="text-2xl">💬</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 mb-1">Conversas Ativas</p>
+              <p id="activeConversations" class="text-2xl font-bold text-slate-900">0</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <span class="text-2xl">⚡</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 mb-1">Resolvidas Hoje</p>
+              <p id="resolvedToday" class="text-2xl font-bold text-slate-900">0</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <span class="text-2xl">✅</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600 mb-1">Handovers Pendentes</p>
+              <p id="pendingHandovers" class="text-2xl font-bold text-slate-900">0</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <span class="text-2xl">⏳</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <h2 class="text-lg font-semibold text-slate-900 mb-4">Atividade Recente</h2>
+          <div id="recentActivity" class="space-y-3">
+            <p class="text-sm text-slate-500 text-center py-4">Nenhuma atividade recente</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-soft">
+          <h2 class="text-lg font-semibold text-slate-900 mb-4">Notificações</h2>
+          <div id="notifications" class="space-y-3">
+            <p class="text-sm text-slate-500 text-center py-4">Nenhuma notificação</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden text-center py-12">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+        <p class="text-red-700" id="errorMessage">Erro ao carregar dados</p>
+        <button
+          onclick="loadDashboard()"
+          class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    // Check authentication
+    if (!auth.isAuthenticated()) {
+      window.location.href = 'login.html';
+    }
+
+    // Get user from localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    document.getElementById('userName').textContent = user.name || 'Usuário';
+    document.getElementById('welcomeName').textContent = user.name || 'Usuário';
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      auth.logout();
+      window.location.href = 'login.html';
+    });
+
+    // Load dashboard data
+    async function loadDashboard() {
+      const loadingState = document.getElementById('loadingState');
+      const dashboardContent = document.getElementById('dashboardContent');
+      const errorState = document.getElementById('errorState');
+
+      loadingState.classList.remove('hidden');
+      dashboardContent.classList.add('hidden');
+      errorState.classList.add('hidden');
+
+      try {
+        const data = await auth.getDashboard();
+
+        if (data.success) {
+          // Update stats
+          document.getElementById('totalConversations').textContent = data.data.stats.totalConversations || 0;
+          document.getElementById('activeConversations').textContent = data.data.stats.activeConversations || 0;
+          document.getElementById('resolvedToday').textContent = data.data.stats.resolvedToday || 0;
+          document.getElementById('pendingHandovers').textContent = data.data.stats.pendingHandovers || 0;
+
+          // Update recent activity
+          const recentActivity = document.getElementById('recentActivity');
+          if (data.data.recentActivity && data.data.recentActivity.length > 0) {
+            recentActivity.innerHTML = data.data.recentActivity.map(activity => `
+              <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <div class="w-2 h-2 bg-primary-600 rounded-full"></div>
+                <p class="text-sm text-slate-700">${activity}</p>
+              </div>
+            `).join('');
+          }
+
+          // Update notifications
+          const notifications = document.getElementById('notifications');
+          if (data.data.notifications && data.data.notifications.length > 0) {
+            notifications.innerHTML = data.data.notifications.map(notification => `
+              <div class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <span class="text-yellow-600">🔔</span>
+                <p class="text-sm text-yellow-800">${notification}</p>
+              </div>
+            `).join('');
+          }
+
+          loadingState.classList.add('hidden');
+          dashboardContent.classList.remove('hidden');
+        }
+      } catch (error) {
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+        document.getElementById('errorMessage').textContent = error.message || 'Erro ao carregar dashboard';
+      }
+    }
+
+    // Load dashboard on page load
+    loadDashboard();
+  </script>
+</body>
+</html>
+
