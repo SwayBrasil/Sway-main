@@ -40,7 +40,7 @@ app.use(express.static(frontendPath));
 // Serve assets
 app.use('/assets', express.static(path.join(frontendPath, 'assets')));
 
-// Serve pages
+// Serve pages específicas
 app.get('/login', (req, res) => {
   res.sendFile(path.join(frontendPath, 'pages/login.html'));
 });
@@ -55,24 +55,6 @@ app.get('/termos', (req, res) => {
 });
 app.get('/privacidade', (req, res) => {
   res.sendFile(path.join(frontendPath, 'pages/privacidade.html'));
-});
-
-// Serve frontend static files
-const frontendPath = path.join(__dirname, '../../frontend/src');
-app.use(express.static(frontendPath));
-
-// Serve assets
-app.use('/assets', express.static(path.join(frontendPath, 'assets')));
-
-// Catch all handler: send back index.html for SPA routes
-app.get('*', (req, res, next) => {
-  // Skip API routes
-  if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
-    return next();
-  }
-  
-  // Serve index.html for all other routes
-  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Catch all handler: send back index.html for frontend routes
