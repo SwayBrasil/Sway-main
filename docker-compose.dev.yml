@@ -26,6 +26,7 @@ services:
     restart: unless-stopped
     networks:
       - sway-network
+    working_dir: /app/backend
     command: npm run dev
 
   db:
