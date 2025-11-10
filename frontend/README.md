@@ -1,62 +1,95 @@
-# Frontend SWAY
+# SWAY Frontend - React
 
-Frontend completo da landing page SWAY, organizado e pronto para desenvolvimento.
+Frontend React do projeto SWAY com Vite, React Router e Tailwind CSS.
+
+## 🚀 Início Rápido
+
+### Instalar dependências
+
+```bash
+npm install
+```
+
+### Desenvolvimento
+
+```bash
+npm run dev
+```
+
+Acesse: http://localhost:5173
+
+### Build para produção
+
+```bash
+npm run build
+```
+
+### Preview da build
+
+```bash
+npm run preview
+```
 
 ## 📁 Estrutura
 
 ```
 frontend/
-├── src/                    # Código-fonte do frontend
-│   ├── assets/
-│   │   ├── css/           # Estilos CSS
-│   │   ├── js/            # JavaScript
-│   │   └── img/           # Imagens e favicons
-│   └── pages/             # Páginas HTML (termos, privacidade)
-│       ├── index.html     # Página principal
-│       ├── termos.html
-│       └── privacidade.html
-└── public/                 # Build/dist (quando implementar build process)
+├── public/
+│   └── assets/
+│       └── img/          # Imagens
+├── src/
+│   ├── components/       # Componentes React
+│   ├── contexts/         # Context API (Auth)
+│   ├── pages/            # Páginas
+│   ├── App.jsx           # App principal
+│   ├── main.jsx          # Entry point
+│   └── index.css         # Estilos globais
+├── package.json
+└── vite.config.js
 ```
 
-## 🚀 GitHub Pages
+## 🔧 Tecnologias
 
-Para manter compatibilidade com GitHub Pages, os arquivos HTML principais também estão na **raiz** do projeto, apontando para `./frontend/src/assets/`.
+- **React 18** - Biblioteca UI
+- **Vite** - Build tool
+- **React Router** - Roteamento
+- **Tailwind CSS** - Estilização
+- **Axios** - HTTP client
 
-## 🛠️ Desenvolvimento
+## 🌐 Variáveis de Ambiente
 
-### Local
-```bash
-# Servidor simples
-cd frontend/src
-python3 -m http.server 8000
+Criar `.env`:
 
-# Ou da raiz do projeto
-python3 -m http.server 8000
-# Acesse: http://localhost:8000
+```env
+VITE_API_URL=http://localhost:3000/api
 ```
 
-### Build (Futuro)
-Quando implementar build process (Webpack, Vite, etc):
-- `src/` → código-fonte
-- `public/` ou `dist/` → arquivos compilados/otimizados
+## 📝 Páginas
 
-## 📦 Dependências
+- `/` - Landing page
+- `/login` - Login
+- `/register` - Cadastro
+- `/home` - Dashboard (protegido)
+- `/termos` - Termos de Uso
+- `/privacidade` - Política de Privacidade
 
-- **Tailwind CSS** - Via CDN (pode migrar para npm quando necessário)
-- **Google Analytics** - Via gtag.js
-- **JavaScript puro** - Sem frameworks (pode adicionar React/Vue/etc quando necessário)
+## 🔐 Autenticação
 
-## 🎯 Estrutura de Paths
+O frontend usa Context API para gerenciar autenticação:
 
-Todos os paths são **relativos** para manter compatibilidade:
-- `./assets/img/` - Imagens
-- `./assets/js/app.js` - JavaScript
-- `./termos.html` - Páginas
+```jsx
+import { useAuth } from './contexts/AuthContext'
 
-## 🔄 Migração para Backend
+const { user, login, logout, isAuthenticated } = useAuth()
+```
 
-Quando o backend for implementado:
-- `frontend/src/` pode ser servido diretamente pelo servidor
-- Ou compilar para `frontend/public/` e servir de lá
-- Backend em `../backend/` servirá a API
+## 🎨 Tailwind CSS
 
+Configurado com cores personalizadas:
+
+- `primary-*` - Cores primárias da marca
+- `shadow-soft` - Sombra suave
+
+## 📦 Build
+
+O build gera arquivos em `dist/` que podem ser servidos estaticamente ou integrados ao backend.
