@@ -3,29 +3,35 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Instalar dependências do backend
+# Instalar dependências globais
+RUN npm install -g nodemon prisma
+
+# Copiar package files do backend
 COPY backend/package*.json ./backend/
+
+# Instalar dependências do backend
 WORKDIR /app/backend
-RUN npm ci --only=production
+RUN npm install
 
 # Copiar código do backend
-COPY backend/ ./
+WORKDIR /app
+COPY backend/ ./backend/
+
+# Copiar frontend
+COPY frontend/ ./frontend/
 
 # Gerar Prisma Client
+WORKDIR /app/backend
 RUN npx prisma generate
-
-# Voltar para raiz e copiar frontend
-WORKDIR /app
-COPY frontend/ ./frontend/
 
 # Expor porta
 EXPOSE 3000
 
 # Variáveis de ambiente
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV PORT=3000
 
-# Comando para iniciar servidor
+# Comando para desenvolvimento (com nodemon)
 WORKDIR /app/backend
-CMD ["node", "src/server.js"]
+CMD ["npm", "run", "dev"]
 

@@ -7,23 +7,25 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-development}
       - PORT=3000
       - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/sway_db}
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       - JWT_EXPIRES_IN=7d
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,https://swaybrasil.com}
     volumes:
-      # Volume para desenvolvimento (hot reload)
+      # Hot reload - código sincronizado
       - ./backend:/app/backend
       - ./frontend:/app/frontend
-      # Excluir node_modules do volume
       - /app/backend/node_modules
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - sway-network
+    working_dir: /app/backend
+    command: npm run dev
 
   db:
     image: postgres:15-alpine
@@ -41,9 +43,9 @@ services:
       - sway-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   postgres_data:
