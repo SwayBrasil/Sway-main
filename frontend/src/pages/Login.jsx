@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -27,9 +29,11 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+      <Navbar showAuthButtons={false} />
+      <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div>
           <div className="flex justify-center">
             <img src="/assets/img/logo-sway.png" alt="SWAY" className="h-12" />
           </div>
@@ -84,6 +88,14 @@ function Login() {
             </div>
           </div>
 
+          <div className="flex items-center justify-end">
+            <div className="text-sm">
+              <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-700">
+                Esqueci minha senha
+              </Link>
+            </div>
+          </div>
+
           <div>
             <button
               type="submit"
@@ -94,7 +106,9 @@ function Login() {
             </button>
           </div>
         </form>
+        </div>
       </div>
+      <Footer />
     </div>
   )
 }

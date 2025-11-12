@@ -20,6 +20,11 @@ COPY backend/ ./backend/
 # Copiar frontend
 COPY frontend/ ./frontend/
 
+# Build do frontend React
+WORKDIR /app/frontend
+RUN npm install
+RUN npm run build
+
 # Gerar Prisma Client
 WORKDIR /app/backend
 RUN npx prisma generate

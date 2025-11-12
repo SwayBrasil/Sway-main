@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import axios from 'axios'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
@@ -35,34 +37,34 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-600">Carregando...</div>
+      <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+        <Navbar showAuthButtons={true} />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-slate-600">Carregando...</div>
+        </div>
+        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Navbar */}
-      <header className="bg-white border-b border-slate-200">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+      <Navbar showAuthButtons={true} />
+      
+      {/* User info bar */}
+      <div className="bg-white border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img src="/assets/img/logo-sway.png" alt="SWAY" className="h-8" />
-              <span className="text-xl font-bold text-slate-900">SWAY</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-600">Olá, {user?.name || 'Usuário'}</span>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg hover:bg-slate-50"
-              >
-                Sair
-              </button>
-            </div>
+          <div className="flex items-center justify-between h-12">
+            <span className="text-sm text-slate-600">Olá, <span className="font-semibold text-slate-900">{user?.name || 'Usuário'}</span></span>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-lg hover:bg-slate-50"
+            >
+              Sair
+            </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Dashboard Content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -140,6 +142,7 @@ function Home() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

@@ -171,6 +171,69 @@ const db = {
       console.error('Error creating notification:', error);
       throw error;
     }
+  },
+
+  // Password reset operations
+  async createPasswordReset(userId, token, expiresAt) {
+    try {
+      // Invalidar tokens anteriores não usados
+      await prisma.passwordReset.updateMany({
+        where: {
+          userId,
+          used: false
+        },
+        data: {
+          used: true
+        }
+      });
+
+      return await prisma.passwordReset.create({
+        data: {
+          userId,
+          token,
+          expiresAt
+        }
+      });
+    } catch (error) {
+      console.error('Error creating password reset:', error);
+      throw error;
+    }
+  },
+
+  async findPasswordResetByToken(token) {
+    try {
+      return await prisma.passwordReset.findUnique({
+        where: { token },
+        include: { user: true }
+      });
+    } catch (error) {
+      console.error('Error finding password reset by token:', error);
+      return null;
+    }
+  },
+
+  async markPasswordResetAsUsed(token) {
+    try {
+      return await prisma.passwordReset.update({
+        where: { token },
+        data: { used: true }
+      });
+    } catch (error) {
+      console.error('Error marking password reset as used:', error);
+      throw error;
+    }
+  },
+
+  async updateUserPassword(userId, hashedPassword) {
+    try {
+      return await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword }
+      });
+    } catch (error) {
+      console.error('Error updating user password:', error);
+      throw error;
+    }
   }
 };
 

@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos customizados para Landing */
+.hero-gradient {
+  background: radial-gradient(1200px 600px at 20% 10%, rgba(47,140,255,.15), transparent), 
+              radial-gradient(900px 500px at 80% 20%, rgba(16,185,129,.12), transparent);
+}
+
+.shadow-soft {
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+}
+
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

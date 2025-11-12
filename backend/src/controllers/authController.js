@@ -181,9 +181,141 @@ const getMe = async (req, res) => {
   }
 };
 
+/**
+ * Request password reset
+ */
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email é obrigatório'
+      });
+    }
+    
+    // Find user
+    const user = await db.findUserByEmail(email);
+    
+    // Sempre retorna sucesso para não expor se o email existe
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message: 'Se o email existir, você receberá instruções para redefinir sua senha'
+      });
+    }
+    
+    // Generate reset token
+    const crypto = require('crypto');
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Token válido por 1 hora
+    
+    // Save token
+    await db.createPasswordReset(user.id, token, expiresAt);
+    
+    // TODO: Enviar email com link de reset
+    // Por enquanto, apenas logamos o token (em produção, enviar email)
+    console.log(`Password reset token for ${email}: ${token}`);
+    console.log(`Reset link: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Se o email existir, você receberá instruções para redefinir sua senha',
+      // Em desenvolvimento, retornamos o token (remover em produção)
+      ...(process.env.NODE_ENV === 'development' && { token })
+    });
+  } catch (error) {
+    console.error('Error in forgotPassword:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao processar solicitação de reset de senha',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Reset password with token
+ */
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token e senha são obrigatórios'
+      });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Senha deve ter no mínimo 6 caracteres'
+      });
+    }
+    
+    // Find reset token
+    const passwordReset = await db.findPasswordResetByToken(token);
+    
+    if (!passwordReset) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token inválido ou expirado'
+      });
+    }
+    
+    if (passwordReset.used) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token já foi utilizado'
+      });
+    }
+    
+    if (new Date() > passwordReset.expiresAt) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token expirado'
+      });
+    }
+    
+    // Hash new password
+    const hashedPassword = await hashPassword(password);
+    
+    // Update user password
+    await db.updateUserPassword(passwordReset.userId, hashedPassword);
+    
+    // Mark token as used
+    await db.markPasswordResetAsUsed(token);
+    
+    // Create activity
+    try {
+      await db.createActivity(passwordReset.userId, 'password_reset', 'Senha redefinida com sucesso');
+    } catch (activityError) {
+      console.error('Error creating password reset activity:', activityError);
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Senha redefinida com sucesso'
+    });
+  } catch (error) {
+    console.error('Error in resetPassword:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao redefinir senha',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  forgotPassword,
+  resetPassword
 };
 
