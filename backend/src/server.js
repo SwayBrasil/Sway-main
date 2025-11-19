@@ -7,20 +7,64 @@ const path = require('path');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
+const checkoutRoutes = require('./routes/checkoutRoutes');
+const conversationsRoutes = require('./routes/conversationsRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+const companyRoutes = require('./routes/companyRoutes');
+
+// Import tenant middleware
+const { detectTenant } = require('./middleware/tenant');
 
 // Initialize app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:8000'],
+// CORS configurado para aceitar subdomínios
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    
+    // Lista de origens permitidas
+    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
+      'http://localhost:3000',
+      'http://localhost:8000',
+      'https://swaybrasil.com',
+      'https://www.swaybrasil.com'
+    ];
+    
+    // Permitir localhost em qualquer porta (desenvolvimento)
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
+    }
+    
+    // Permitir subdomínios de swaybrasil.com
+    if (origin.includes('.swaybrasil.com') || origin.includes('swaybrasil.com')) {
+      return callback(null, true);
+    }
+    
+    // Verificar se está na lista de permitidos
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
+// Tenant detection middleware (antes das rotas)
+// Aplica em todas as rotas, mas não bloqueia se não houver subdomínio
+app.use(detectTenant);
+
+
+// API Routes
+// Rotas públicas que não requerem tenant (landing page, etc)
 app.get('/health', (req, res) => {
   res.json({
     success: true,
@@ -29,9 +73,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
+// Rotas que requerem tenant (subdomínio)
 app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
+app.use('/api/checkout', checkoutRoutes);
+app.use('/api/conversations', conversationsRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/settings', settingsRoutes);
+
+// Rotas de admin (criar companies) - pode ser acessado sem subdomínio
+app.use('/api/companies', companyRoutes);
 
 // Serve frontend static files (React build ou desenvolvimento)
 const frontendDistPath = path.join(__dirname, '../../frontend/dist');
@@ -52,8 +103,8 @@ if (buildExists) {
   
   // Catch all handler: send back index.html for frontend routes (React Router)
   app.get('*', (req, res, next) => {
-    // Skip API routes and health check
-    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    // Skip API routes
+    if (req.path.startsWith('/api')) {
       return res.status(404).json({
         success: false,
         message: 'Rota não encontrada'
@@ -73,8 +124,8 @@ if (buildExists) {
   
   // Serve index.html for all frontend routes (React Router will handle routing)
   app.get('*', (req, res, next) => {
-    // Skip API routes and health check
-    if (req.path.startsWith('/api') || req.path.startsWith('/health')) {
+    // Skip API routes
+    if (req.path.startsWith('/api')) {
       return next();
     }
     

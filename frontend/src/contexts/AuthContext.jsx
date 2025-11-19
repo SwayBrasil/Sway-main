@@ -31,10 +31,10 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const login = async (email, password) => {
+  const login = async (cpfCnpj, password) => {
     try {
       const response = await axios.post(`${API_URL}/auth/login`, {
-        email,
+        cpfCnpj,
         password,
       })
       
@@ -56,11 +56,12 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const register = async (name, email, password) => {
+  const register = async (name, cpfCnpj, email, password) => {
     try {
       const response = await axios.post(`${API_URL}/auth/register`, {
         name,
-        email,
+        cpfCnpj,
+        email: email || null,
         password,
       })
       
@@ -99,6 +100,8 @@ export function AuthProvider({ children }) {
       value={{
         user,
         loading,
+        token,
+        setToken,
         login,
         register,
         logout,

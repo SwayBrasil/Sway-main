@@ -36,122 +36,142 @@ function Landing() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-neutral-50 text-neutral-900">
       <Navbar showAuthButtons={true} />
 
       {/* HERO */}
-      <section className="relative hero-gradient">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 max-w-3xl">
-              IA de Atendimento Vertical para Empresas Brasileiras
-            </h1>
-            <p className="mt-5 text-lg text-slate-600 max-w-2xl">
-              Chatbot inteligente especializado por setor (clínicas, advocacia, vendas) que trabalha 24h, reduz 70% da carga operacional e aumenta conversões com handover automático para sua equipe.
-            </p>
+      <section className="relative hero-gradient overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Content */}
+            <div className="space-y-8">
+              {/* Main Headline */}
+              <div>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-tight">
+                  Atenda fácil.
+                  <br />
+                  <span className="text-primary-600">Atenda com IA</span>
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-xl">
+                  Plataforma completa de atendimento com IA. Chat em tempo real, Kanban de leads, gestão de conversas e analytics detalhados — tudo em um só lugar.
+                </p>
+                <p className="mt-4 text-base text-neutral-500">
+                  Use para <span className="font-semibold text-neutral-700">marketing</span>, <span className="font-semibold text-neutral-700">vendas</span> e <span className="font-semibold text-neutral-700">pós-vendas</span>.
+                </p>
+              </div>
 
-            {/* Seção Interativa: Demonstração rápida */}
-            <div className="mt-10 w-full max-w-2xl">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 p-6 shadow-soft">
-                <p className="text-sm font-semibold text-slate-700 mb-4">💡 Veja como nossa IA atende um cliente em 10 segundos:</p>
-                <div className="bg-slate-900 rounded-xl p-6 text-left font-mono text-sm text-green-400 overflow-x-auto">
-                  <div className="space-y-2">
-                    <div>
-                      <span className="text-slate-500">Cliente:</span>{' '}
-                      <span className="text-white">Olá, preciso agendar uma consulta</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">IA SWAY:</span>{' '}
-                      <span className="text-green-300">Olá! Vou te ajudar. Qual especialidade você precisa?</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">Cliente:</span>{' '}
-                      <span className="text-white">Cardiologia</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500">IA SWAY:</span>{' '}
-                      <span className="text-green-300">Perfeito! Temos disponibilidade hoje às 14h ou amanhã às 10h. Qual prefere?</span>
-                    </div>
-                    <div className="text-xs text-slate-400 mt-3">⚡ Resposta em 0.8s • Atendimento 24/7</div>
+              {/* Key Features */}
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-neutral-900 mb-1">Rápido</h3>
+                    <p className="text-sm text-neutral-600">Atenda seus clientes 24 horas por dia, sem pausa.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-neutral-900 mb-1">Seguro</h3>
+                    <p className="text-sm text-neutral-600">Criptografia de ponta e LGPD.</p>
                   </div>
                 </div>
               </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-wrap items-center gap-4">
+                <a
+                  href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20ver%20a%20IA%20em%20a%C3%A7%C3%A3o%20da%20SWAY&type=phone_number&app_absent=0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary px-8 py-4 text-base font-semibold flex items-center gap-2 group"
+                  data-event="view_demo"
+                  id="cta-view-demo"
+                >
+                  Integre ao seu negócio
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </a>
+                <a
+                  href="/#como-funciona"
+                  className="text-neutral-600 hover:text-neutral-900 font-medium transition-colors"
+                >
+                  Por que usar?
+                </a>
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap justify-center items-center gap-3">
-              <a
-                href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20ver%20a%20IA%20em%20a%C3%A7%C3%A3o%20da%20SWAY&type=phone_number&app_absent=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-button px-6 py-3 rounded-xl bg-primary-600 text-white hover:bg-primary-700 font-semibold shadow-lg transition-all"
-                data-event="view_demo"
-                id="cta-view-demo"
-              >
-                Ver IA em ação
-              </a>
-              <a
-                href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20agendar%20uma%20conversa%20com%20especialista%20sobre%20a%20SWAY&type=phone_number&app_absent=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-button px-6 py-3 rounded-xl border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold"
-                data-event="whatsapp_click"
-                id="cta-whatsapp-hero"
-              >
-                Agendar conversa com especialista
-              </a>
-            </div>
-            <div className="mt-6 text-sm text-slate-500">
-              Respostas em segundos • Atendimento 24/7 • Reduza 70% da carga da sua equipe em 7 dias
+            {/* Right Side - Dashboard Preview */}
+            <div className="relative hidden lg:block">
+              <div className="relative">
+                {/* Desktop Dashboard Preview */}
+                <div className="card shadow-soft-xl bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+                  <img 
+                    src="/assets/img/FeatureChat.png" 
+                    alt="Interface SWAY - Chat em tempo real com gestão de conversas" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* PRODUTO */}
-      <section id="produto" className="py-20 bg-gradient-to-b from-white to-slate-50">
+      <section id="produto" className="py-24 bg-gradient-to-b from-white to-neutral-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-1">
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Tudo para colocar IA em produção</h2>
-              <p className="mt-4 text-slate-600">
-                Inbox omnichannel, handover instantâneo, CRM leve e relatórios claros — prontos para sua operação crescer com segurança.
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-900">Tudo que você precisa para atender com IA</h2>
+              <p className="mt-6 text-lg text-neutral-600 leading-relaxed">
+                Chat em tempo real, Kanban de leads, gestão de conversas, analytics detalhados e muito mais — tudo integrado em uma plataforma única.
               </p>
             </div>
             <div className="lg:col-span-2 grid sm:grid-cols-2 gap-6">
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">Inbox tipo WhatsApp Web</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Interface familiar de chat, busca, filtros de não lidas, status e confirmação de leitura para velocidade de operação.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Chat em Tempo Real</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Interface familiar tipo WhatsApp Web. Assuma conversas em 1 clique, pause a IA quando precisar e continue de onde parou.
                 </p>
               </div>
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">Handover IA → Humano</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Assuma em 1 clique. Crie regras por intenção, risco, palavra-chave ou score de confiança da IA.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Kanban de Leads</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Organize leads por temperatura (Quente, Morno, Frio). Visualize score, origem e última interação. Mude a temperatura com um clique.
                 </p>
               </div>
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">CRM leve</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Contatos com tags, histórico e campos personalizáveis por setor. Tudo no contexto da conversa.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Gestão de Conversas</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Filtre conversas por status, busque por nome ou mensagem, veja histórico completo e assuma quando a IA precisar de ajuda.
                 </p>
               </div>
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">Analytics acionável</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Tempo de resposta, taxa de resolução, intenções top, handover e satisfação. Métricas que viram decisões.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Analytics Detalhados</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Veja total de conversas, mensagens enviadas, respostas da IA, média por conversa e gráficos de distribuição e evolução diária.
                 </p>
               </div>
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">Segurança & LGPD</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  Criptografia em trânsito, acesso por função, segregação por cliente e política de retenção configurável.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Contatos & CRM</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Gerencie todos os seus contatos, veja histórico de interações, origem do lead e informações completas em um só lugar.
                 </p>
               </div>
-              <div className="p-6 bg-white rounded-2xl shadow-soft border">
-                <h3 className="font-semibold">Integrações</h3>
-                <p className="mt-2 text-sm text-slate-600">
-                  WhatsApp Business API, webchat, e-mail e webhooks. API aberta para conectar seu stack.
+              <div className="card p-8 card-hover">
+                <h3 className="text-lg font-semibold text-neutral-900">Tarefas & Organização</h3>
+                <p className="mt-3 text-sm text-neutral-600 leading-relaxed">
+                  Crie e gerencie tarefas relacionadas às conversas. Organize seu fluxo de trabalho e nunca perca um follow-up.
                 </p>
               </div>
             </div>
@@ -164,15 +184,16 @@ function Landing() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Como Funciona: IA de Atendimento Vertical para Empresas</h2>
+              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Como Funciona: Plataforma Completa de Atendimento</h2>
               <p className="mt-4 text-slate-600">
-                Nossa IA entende a necessidade do cliente, responde em segundos e, quando necessário, passa a conversa para sua equipe sem atrito. Isso significa mais clientes atendidos, menos tempo de espera e uma experiência que gera confiança.
+                Nossa IA atende seus clientes 24/7, qualifica leads automaticamente e organiza tudo em um Kanban visual. Quando precisar, assuma a conversa em 1 clique e continue de onde a IA parou.
               </p>
               <ul className="mt-6 space-y-3 text-slate-700">
-                <li>• Responde dúvidas frequentes automaticamente</li>
-                <li>• Gera agendamentos, lembretes e follow-ups</li>
-                <li>• Qualifica leads e identifica oportunidades</li>
-                <li>• Reduz a carga de trabalho da equipe em até 70%</li>
+                <li>• <strong>Chat em tempo real:</strong> Interface familiar, busca rápida e filtros por status</li>
+                <li>• <strong>Kanban de leads:</strong> Organize por temperatura (Quente, Morno, Frio) e acompanhe scores</li>
+                <li>• <strong>Assumir conversas:</strong> Pause a IA quando precisar e continue o atendimento</li>
+                <li>• <strong>Analytics completo:</strong> Veja métricas detalhadas, gráficos e relatórios por dia</li>
+                <li>• <strong>Gestão de contatos:</strong> Histórico completo, origem do lead e informações centralizadas</li>
               </ul>
             </div>
             <div className="p-6 bg-slate-900 text-slate-50 rounded-2xl shadow-soft">
@@ -268,17 +289,14 @@ function Landing() {
                 <li>• 5k mensagens/mês</li>
                 <li>• Suporte por e-mail</li>
               </ul>
-              <a
-                data-plan="Start"
-                href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20o%20plano%20Start%20da%20SWAY&type=phone_number&app_absent=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50"
+              <Link
+                to="/plan-selection?plan=Start"
+                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-center"
                 data-event="select_plan"
                 data-plan-name="Start"
               >
                 Quero o Start
-              </a>
+              </Link>
             </div>
             {/* Pro */}
             <div className="p-8 bg-slate-900 text-white rounded-2xl shadow-soft ring-2 ring-primary-500">
@@ -289,17 +307,14 @@ function Landing() {
                 <li>• 20k mensagens/mês</li>
                 <li>• Suporte prioritário</li>
               </ul>
-              <a
-                data-plan="Pro"
-                href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20o%20plano%20Pro%20da%20SWAY&type=phone_number&app_absent=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500"
+              <Link
+                to="/plan-selection?plan=Pro"
+                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-center"
                 data-event="select_plan"
                 data-plan-name="Pro"
               >
                 Quero o Pro
-              </a>
+              </Link>
             </div>
             {/* Enterprise */}
             <div className="p-8 bg-white rounded-2xl border shadow-soft">
@@ -310,17 +325,14 @@ function Landing() {
                 <li>• SLA e integrações</li>
                 <li>• Onboarding assistido</li>
               </ul>
-              <a
-                data-plan="Enterprise"
-                href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20o%20plano%20Enterprise%20da%20SWAY&type=phone_number&app_absent=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50"
+              <Link
+                to="/plan-selection?plan=Enterprise"
+                className="cta-button mt-6 inline-block px-5 py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-center"
                 data-event="select_plan"
                 data-plan-name="Enterprise"
               >
                 Quero o Enterprise
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -332,20 +344,28 @@ function Landing() {
           <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-center">Perguntas frequentes</h2>
           <div className="mt-10 space-y-4">
             <details className="group bg-white border rounded-xl p-5 shadow-soft">
-              <summary className="font-semibold cursor-pointer">Posso assumir uma conversa a qualquer momento?</summary>
-              <p className="mt-2 text-slate-600">Sim. O handover IA→humano é feito em um clique e também pode seguir regras automáticas.</p>
+              <summary className="font-semibold cursor-pointer">Como funciona o Kanban de leads?</summary>
+              <p className="mt-2 text-slate-600">O Kanban organiza seus leads em três colunas: Quente (alta prioridade), Morno (média prioridade) e Frio (baixa prioridade). Cada lead mostra score, origem, última interação e você pode mover entre colunas ou abrir o chat diretamente.</p>
             </details>
             <details className="group bg-white border rounded-xl p-5 shadow-soft">
-              <summary className="font-semibold cursor-pointer">Vocês treinam uma IA por setor?</summary>
-              <p className="mt-2 text-slate-600">Trabalhamos com IAs verticais (advocacia, clínicas, vendas, suporte) e personalizamos com os seus dados e processos.</p>
+              <summary className="font-semibold cursor-pointer">Posso assumir uma conversa e pausar a IA?</summary>
+              <p className="mt-2 text-slate-600">Sim! Com um clique você pode assumir qualquer conversa e pausar a IA. Quando assumir, você continua de onde a IA parou, vendo todo o histórico de mensagens. A IA só volta quando você quiser.</p>
             </details>
             <details className="group bg-white border rounded-xl p-5 shadow-soft">
-              <summary className="font-semibold cursor-pointer">Quais canais são suportados?</summary>
-              <p className="mt-2 text-slate-600">WhatsApp Business API, webchat e e-mail inicialmente. Outras integrações sob demanda.</p>
+              <summary className="font-semibold cursor-pointer">O que são os scores dos leads?</summary>
+              <p className="mt-2 text-slate-600">O score indica o nível de interesse e engajamento do lead. Quanto maior o score, mais quente o lead. A IA calcula automaticamente baseado nas interações, perguntas feitas e comportamento do cliente.</p>
             </details>
             <details className="group bg-white border rounded-xl p-5 shadow-soft">
-              <summary className="font-semibold cursor-pointer">Como garantem segurança e LGPD?</summary>
-              <p className="mt-2 text-slate-600">Criptografia em trânsito, controle de acesso por função, segregação por cliente e retenção configurável.</p>
+              <summary className="font-semibold cursor-pointer">Como funcionam os filtros de conversas?</summary>
+              <p className="mt-2 text-slate-600">Você pode filtrar conversas por temperatura (Quente, Morno, Frio), buscar por nome ou número, e ver todas as conversas em uma lista organizada. Cada conversa mostra status, última mensagem e horário.</p>
+            </details>
+            <details className="group bg-white border rounded-xl p-5 shadow-soft">
+              <summary className="font-semibold cursor-pointer">Quais métricas posso ver no analytics?</summary>
+              <p className="mt-2 text-slate-600">Você vê total de conversas, mensagens totais, quantas você enviou vs quantas a IA respondeu, média de mensagens por conversa, gráficos de distribuição e evolução diária, além de tabelas detalhadas por data.</p>
+            </details>
+            <details className="group bg-white border rounded-xl p-5 shadow-soft">
+              <summary className="font-semibold cursor-pointer">Posso gerenciar tarefas relacionadas às conversas?</summary>
+              <p className="mt-2 text-slate-600">Sim! A plataforma inclui gestão de tarefas onde você pode criar, organizar e acompanhar tarefas relacionadas às suas conversas e leads, garantindo que nenhum follow-up seja esquecido.</p>
             </details>
           </div>
         </div>
@@ -381,12 +401,14 @@ function Landing() {
           href="https://api.whatsapp.com/send/?phone=556198431746&text=Ol%C3%A1%2C%20quero%20agendar%20uma%20conversa%20com%20especialista%20sobre%20a%20SWAY&type=phone_number&app_absent=0"
           target="_blank"
           rel="noopener noreferrer"
-          className="cta-button flex items-center gap-2 px-6 py-3 rounded-full bg-primary-600 text-white hover:bg-primary-700 shadow-2xl font-semibold transition-all animate-pulse"
+          className="cta-button flex items-center justify-center w-16 h-16 rounded-full bg-[#25D366] hover:bg-[#20BA5A] shadow-2xl transition-all hover:scale-110"
           data-event="whatsapp_click"
           data-context="fixed_button"
+          aria-label="Falar no WhatsApp"
         >
-          <span>💬</span>
-          <span>Falar agora</span>
+          <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+          </svg>
         </a>
       </div>
     </div>

@@ -6,8 +6,25 @@ const db = require('../config/database');
  */
 const getHome = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await db.findUserById(userId);
+    const userId = req.user?.id;
+    const companyId = req.companyId;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não autenticado'
+      });
+    }
+    
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Tenant não identificado'
+      });
+    }
+    
+    // Buscar dados do usuário (verificando se pertence à company)
+    const user = await db.findUserById(userId, companyId);
     
     if (!user) {
       return res.status(404).json({
@@ -16,14 +33,22 @@ const getHome = async (req, res) => {
       });
     }
     
-    // Get stats from database
-    const stats = await db.getConversationStats(userId);
+    // Verificar se o usuário pertence à company do subdomínio
+    if (user.companyId !== companyId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Acesso negado'
+      });
+    }
     
-    // Get recent activities
-    const activities = await db.getRecentActivities(userId, 5);
+    // Buscar estatísticas de conversas (filtrado por company)
+    const stats = await db.getConversationStats(companyId, userId);
     
-    // Get notifications
-    const notifications = await db.getNotifications(userId, 5);
+    // Buscar atividades recentes (filtrado por company)
+    const activities = await db.getRecentActivities(companyId, userId, 5);
+    
+    // Buscar notificações (filtrado por company)
+    const notifications = await db.getNotifications(companyId, userId, 5);
     
     // Dashboard data
     const dashboardData = {

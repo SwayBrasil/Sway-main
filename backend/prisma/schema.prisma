@@ -10,18 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  subdomain   String   @unique // ex: cliente1, cliente2
+  domain      String?  // ex: cliente1.swaybrasil.com
+  cnpj        String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  users       User[]
+
+  @@map("companies")
+}
+
 model User {
   id            Int                @id @default(autoincrement())
   name          String
-  email         String             @unique
-  password      String
+  cpfCnpj       String             @unique // CPF ou CNPJ como identificador único
+  email         String?            // Opcional agora
+  password      String?             // Opcional para login social
+  provider      String?             // google, facebook, apple, local
+  providerId    String?             // ID do provedor social
+  avatar        String?             // URL do avatar
+  companyId     Int                 // Relacionamento com Company
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   
+  company       Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
   conversations Conversation[]
   activities    Activity[]
   notifications Notification[]
   passwordResets PasswordReset[]
+  subscriptions Subscription[]
+  orders        Order[]
 
   @@map("users")
 }
@@ -75,4 +98,43 @@ model Notification {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model Subscription {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  plan          String    // Start, Pro, Enterprise
+  status        String    @default("active") // active, cancelled, expired
+  paymentMethod String?   // credit_card, pix, boleto
+  price         Decimal   @db.Decimal(10, 2)
+  currency      String    @default("BRL")
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
+
+  @@map("subscriptions")
+}
+
+model Order {
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  subscriptionId Int?
+  plan          String       // Start, Pro, Enterprise
+  amount        Decimal      @db.Decimal(10, 2)
+  currency      String       @default("BRL")
+  status        String       @default("pending") // pending, paid, failed, cancelled
+  paymentMethod String?      // credit_card, pix, boleto
+  paymentId     String?      // ID do gateway de pagamento
+  metadata      Json?        // Dados adicionais do pagamento
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription  Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@map("orders")
 }

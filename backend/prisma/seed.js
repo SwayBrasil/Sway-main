@@ -6,16 +6,33 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Iniciando seed do banco de dados...');
 
+  // Criar company padrão (para desenvolvimento/teste)
+  const defaultCompany = await prisma.company.upsert({
+    where: { subdomain: 'demo' },
+    update: {},
+    create: {
+      name: 'Empresa Demo',
+      subdomain: 'demo',
+      domain: 'demo.swaybrasil.com',
+      active: true
+    },
+  });
+
+  console.log('✅ Company demo criada:', defaultCompany.subdomain);
+
   // Criar usuário admin
   const hashedPassword = await bcrypt.hash('admin123', 10);
   
   const admin = await prisma.user.upsert({
     where: { email: 'admin@swaybrasil.com' },
-    update: {},
+    update: {
+      companyId: defaultCompany.id
+    },
     create: {
       name: 'Administrador',
       email: 'admin@swaybrasil.com',
       password: hashedPassword,
+      companyId: defaultCompany.id,
     },
   });
 

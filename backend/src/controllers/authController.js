@@ -8,13 +8,23 @@ const { generateToken } = require('../utils/jwt');
  */
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, cpfCnpj, email, password } = req.body;
     
     // Validations
-    if (!name || !email || !password) {
+    if (!name || !cpfCnpj || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Nome, email e senha são obrigatórios'
+        message: 'Nome, CPF/CNPJ e senha são obrigatórios'
+      });
+    }
+    
+    // Validar formato CPF/CNPJ (remover caracteres não numéricos)
+    const cleanCpfCnpj = cpfCnpj.replace(/\D/g, '');
+    
+    if (cleanCpfCnpj.length !== 11 && cleanCpfCnpj.length !== 14) {
+      return res.status(400).json({
+        success: false,
+        message: 'CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos'
       });
     }
     
@@ -25,23 +35,58 @@ const register = async (req, res) => {
       });
     }
     
-    // Check if user already exists
-    const existingUser = await db.findUserByEmail(email);
+    // Verificar se há tenant (subdomínio ou company padrão)
+    let companyId = req.companyId;
+    
+    if (!companyId) {
+      // Tentar criar ou buscar company padrão "demo"
+      try {
+        let defaultCompany = await db.findCompanyBySubdomain('demo');
+        
+        if (!defaultCompany) {
+          // Criar company demo se não existir
+          defaultCompany = await db.createCompany({
+            name: 'Empresa Demo',
+            subdomain: 'demo',
+            domain: 'demo.swaybrasil.com',
+            active: true
+          });
+        }
+        
+        // Atualizar req para usar a company demo
+        companyId = defaultCompany.id;
+        req.companyId = defaultCompany.id;
+        req.tenant = defaultCompany;
+        req.subdomain = 'demo';
+      } catch (error) {
+        console.error('Error creating/finding default company:', error);
+        return res.status(400).json({
+          success: false,
+          message: 'Acesso deve ser feito através do subdomínio da empresa ou entre em contato com o suporte'
+        });
+      }
+    }
+    
+    // Check if user already exists (dentro da mesma company)
+    const existingUser = await db.findUserByCpfCnpj(cleanCpfCnpj, companyId);
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: 'Email já cadastrado'
+        message: 'CPF/CNPJ já cadastrado'
       });
     }
     
     // Hash password
     const hashedPassword = await hashPassword(password);
     
-    // Create user
+    // Create user (usar companyId que foi definido acima)
     const user = await db.createUser({
       name,
-      email,
-      password: hashedPassword
+      cpfCnpj: cleanCpfCnpj,
+      email: email || null,
+      password: hashedPassword,
+      provider: 'local',
+      companyId: companyId
     });
     
     // Create welcome activity
@@ -55,7 +100,7 @@ const register = async (req, res) => {
     // Generate token
     const token = generateToken({
       id: user.id,
-      email: user.email,
+      cpfCnpj: user.cpfCnpj,
       name: user.name
     });
     
@@ -84,22 +129,69 @@ const register = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { cpfCnpj, password } = req.body;
     
     // Validations
-    if (!email || !password) {
+    if (!cpfCnpj || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Email e senha são obrigatórios'
+        message: 'CPF/CNPJ e senha são obrigatórios'
       });
     }
     
-    // Find user
-    const user = await db.findUserByEmail(email);
+    // Limpar CPF/CNPJ (remover caracteres não numéricos)
+    const cleanCpfCnpj = cpfCnpj.replace(/\D/g, '');
+    
+    // Verificar se há tenant (subdomínio ou company padrão)
+    let companyId = req.companyId;
+    
+    if (!companyId) {
+      // Tentar buscar ou criar company padrão "demo"
+      try {
+        let defaultCompany = await db.findCompanyBySubdomain('demo');
+        
+        // Se não existir, criar automaticamente
+        if (!defaultCompany) {
+          defaultCompany = await db.createCompany({
+            name: 'Empresa Demo',
+            subdomain: 'demo',
+            domain: 'demo.swaybrasil.com',
+            active: true
+          });
+        }
+        
+        if (defaultCompany && defaultCompany.active) {
+          companyId = defaultCompany.id;
+          req.companyId = companyId;
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: 'Acesso deve ser feito através do subdomínio da empresa'
+          });
+        }
+      } catch (error) {
+        console.error('Error finding/creating default company:', error);
+        return res.status(400).json({
+          success: false,
+          message: 'Acesso deve ser feito através do subdomínio da empresa'
+        });
+      }
+    }
+    
+    // Find user (dentro da mesma company)
+    const user = await db.findUserByCpfCnpj(cleanCpfCnpj, companyId);
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Email ou senha inválidos'
+        message: 'CPF/CNPJ ou senha inválidos'
+      });
+    }
+    
+    // Verificar se usuário tem login social (sem senha)
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: `Este email está cadastrado via ${user.provider || 'login social'}. Use o login social.`
       });
     }
     
@@ -115,7 +207,7 @@ const login = async (req, res) => {
     // Generate token
     const token = generateToken({
       id: user.id,
-      email: user.email,
+      cpfCnpj: user.cpfCnpj,
       name: user.name
     });
     
@@ -124,13 +216,12 @@ const login = async (req, res) => {
       await db.createActivity(user.id, 'login', 'Login realizado com sucesso');
     } catch (activityError) {
       console.error('Error creating login activity:', activityError);
-      // Não falha o login se a atividade não for criada
     }
     
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
     
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: 'Login realizado com sucesso',
       data: {
@@ -152,8 +243,18 @@ const login = async (req, res) => {
  */
 const getMe = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await db.findUserById(userId);
+    const userId = req.user?.id;
+    const companyId = req.companyId;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não autenticado'
+      });
+    }
+    
+    // Verificar se o usuário pertence à company do subdomínio
+    const user = await db.findUserById(userId, companyId);
     
     if (!user) {
       return res.status(404).json({
@@ -162,17 +263,24 @@ const getMe = async (req, res) => {
       });
     }
     
+    // Verificar se o usuário autenticado pertence à mesma company
+    if (user.companyId !== companyId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Acesso negado'
+      });
+    }
+    
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
     
-    return res.status(200).json({
+    return res.json({
       success: true,
       data: {
         user: userWithoutPassword
       }
     });
   } catch (error) {
-    console.error('Error in getMe:', error);
     return res.status(500).json({
       success: false,
       message: 'Erro ao buscar usuário',
@@ -182,7 +290,138 @@ const getMe = async (req, res) => {
 };
 
 /**
- * Request password reset
+ * Update user profile
+ */
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { name, email } = req.body;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não autenticado'
+      });
+    }
+    
+    // Check if email is already taken by another user
+    if (email) {
+      const existingUser = await db.findUserByEmail(email);
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(409).json({
+          success: false,
+          message: 'Email já está em uso por outra conta'
+        });
+      }
+    }
+    
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    
+    const updatedUser = await db.updateUser(userId, updateData);
+    
+    // Create activity
+    try {
+      await db.createActivity(userId, 'profile_update', 'Perfil atualizado');
+    } catch (activityError) {
+      console.error('Error creating activity:', activityError);
+    }
+    
+    // Remove password from response
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    
+    return res.json({
+      success: true,
+      message: 'Perfil atualizado com sucesso',
+      data: {
+        user: userWithoutPassword
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao atualizar perfil',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Change password
+ */
+const changePassword = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não autenticado'
+      });
+    }
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Senha atual e nova senha são obrigatórias'
+      });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'A nova senha deve ter no mínimo 6 caracteres'
+      });
+    }
+    
+    const user = await db.findUserById(userId);
+    
+    if (!user || !user.password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Usuário não possui senha cadastrada'
+      });
+    }
+    
+    // Verify current password
+    const isPasswordValid = await comparePassword(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Senha atual incorreta'
+      });
+    }
+    
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+    
+    // Update password
+    await db.updateUserPassword(userId, hashedPassword);
+    
+    // Create activity
+    try {
+      await db.createActivity(userId, 'password_change', 'Senha alterada');
+    } catch (activityError) {
+      console.error('Error creating activity:', activityError);
+    }
+    
+    return res.json({
+      success: true,
+      message: 'Senha alterada com sucesso'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao alterar senha',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Forgot password
  */
 const forgotPassword = async (req, res) => {
   try {
@@ -195,49 +434,42 @@ const forgotPassword = async (req, res) => {
       });
     }
     
-    // Find user
     const user = await db.findUserByEmail(email);
     
-    // Sempre retorna sucesso para não expor se o email existe
+    // Sempre retornar sucesso para não expor se o email existe
     if (!user) {
-      return res.status(200).json({
+      return res.json({
         success: true,
         message: 'Se o email existir, você receberá instruções para redefinir sua senha'
       });
     }
     
-    // Generate reset token
+    // Gerar token de reset
     const crypto = require('crypto');
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // Token válido por 1 hora
+    const expiresAt = new Date(Date.now() + 3600000); // 1 hora
     
-    // Save token
     await db.createPasswordReset(user.id, token, expiresAt);
     
-    // TODO: Enviar email com link de reset
-    // Por enquanto, apenas logamos o token (em produção, enviar email)
+    // Em produção, enviar e-mail aqui
     console.log(`Password reset token for ${email}: ${token}`);
-    console.log(`Reset link: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`);
+    console.log(`Reset URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`);
     
-    return res.status(200).json({
+    return res.json({
       success: true,
-      message: 'Se o email existir, você receberá instruções para redefinir sua senha',
-      // Em desenvolvimento, retornamos o token (remover em produção)
-      ...(process.env.NODE_ENV === 'development' && { token })
+      message: 'Se o email existir, você receberá instruções para redefinir sua senha'
     });
   } catch (error) {
-    console.error('Error in forgotPassword:', error);
     return res.status(500).json({
       success: false,
-      message: 'Erro ao processar solicitação de reset de senha',
+      message: 'Erro ao processar solicitação',
       error: error.message
     });
   }
 };
 
 /**
- * Reset password with token
+ * Reset password
  */
 const resetPassword = async (req, res) => {
   try {
@@ -257,7 +489,6 @@ const resetPassword = async (req, res) => {
       });
     }
     
-    // Find reset token
     const passwordReset = await db.findPasswordResetByToken(token);
     
     if (!passwordReset) {
@@ -274,7 +505,7 @@ const resetPassword = async (req, res) => {
       });
     }
     
-    if (new Date() > passwordReset.expiresAt) {
+    if (new Date(passwordReset.expiresAt) < new Date()) {
       return res.status(400).json({
         success: false,
         message: 'Token expirado'
@@ -292,17 +523,16 @@ const resetPassword = async (req, res) => {
     
     // Create activity
     try {
-      await db.createActivity(passwordReset.userId, 'password_reset', 'Senha redefinida com sucesso');
+      await db.createActivity(passwordReset.userId, 'password_reset', 'Senha redefinida via e-mail');
     } catch (activityError) {
-      console.error('Error creating password reset activity:', activityError);
+      console.error('Error creating activity:', activityError);
     }
     
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: 'Senha redefinida com sucesso'
     });
   } catch (error) {
-    console.error('Error in resetPassword:', error);
     return res.status(500).json({
       success: false,
       message: 'Erro ao redefinir senha',
@@ -315,7 +545,8 @@ module.exports = {
   register,
   login,
   getMe,
+  updateProfile,
+  changePassword,
   forgotPassword,
   resetPassword
 };
-

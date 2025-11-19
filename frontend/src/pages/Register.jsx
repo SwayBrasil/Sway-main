@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { isMainDomain, getSubdomain } from '../utils/subdomain'
 
 function Register() {
   const [name, setName] = useState('')
+  const [cpfCnpj, setCpfCnpj] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -14,9 +16,24 @@ function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
 
+  // Removido redirecionamento automático - permitir cadastro no domínio principal também
+  // O backend agora usa company "demo" como padrão
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    if (!name || !cpfCnpj || !password) {
+      setError('Nome, CPF/CNPJ e senha são obrigatórios')
+      return
+    }
+
+    // Validar CPF/CNPJ
+    const cleanCpfCnpj = cpfCnpj.replace(/\D/g, '')
+    if (cleanCpfCnpj.length !== 11 && cleanCpfCnpj.length !== 14) {
+      setError('CPF deve ter 11 dígitos ou CNPJ deve ter 14 dígitos')
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem')
@@ -30,7 +47,7 @@ function Register() {
 
     setLoading(true)
 
-    const result = await register(name, email, password)
+    const result = await register(name, cleanCpfCnpj, email || null, password)
 
     if (result.success) {
       navigate('/home')
@@ -53,6 +70,11 @@ function Register() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
             Crie sua conta
           </h2>
+          {getSubdomain() && (
+            <p className="mt-2 text-center text-sm text-slate-600">
+              Empresa: <span className="font-semibold">{getSubdomain()}.swaybrasil.com</span>
+            </p>
+          )}
           <p className="mt-2 text-center text-sm text-slate-600">
             Ou{' '}
             <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
@@ -83,15 +105,30 @@ function Register() {
               />
             </div>
             <div>
+              <label htmlFor="cpfCnpj" className="block text-sm font-medium text-slate-700">
+                CPF/CNPJ <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="cpfCnpj"
+                name="cpfCnpj"
+                type="text"
+                autoComplete="username"
+                required
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                value={cpfCnpj}
+                onChange={(e) => setCpfCnpj(e.target.value)}
+              />
+            </div>
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email
+                Email (opcional)
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                 placeholder="seu@email.com"
                 value={email}
